@@ -74,9 +74,12 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
         req.continue();
       }
     });
-    
+
+    // 检查是否是wiki链接
+    const isWikiLink = link.includes('/wiki/');
+
     // 访问页面
-    console.log(`[服务器爬取] 正在加载页面...`);
+    console.log(`[服务器爬取] 正在加载页面... (类型: ${isWikiLink ? 'Wiki文档' : '普通文档'})`);
     await page.goto(link, {
       waitUntil: 'networkidle2', // 等待网络空闲
       timeout: 30000
@@ -84,7 +87,26 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
 
     // 等待内容加载（飞书文档可能需要一些时间渲染）
     console.log(`[服务器爬取] 等待内容渲染...`);
-    await new Promise(resolve => setTimeout(resolve, 8000)); // 增加到 8 秒确保完全渲染
+
+    // Wiki文档需要更长的渲染时间
+    const renderTime = isWikiLink ? 15000 : 8000; // Wiki 15秒，普通文档8秒
+    await new Promise(resolve => setTimeout(resolve, renderTime));
+
+    // 额外检查：确保页面内容已经加载
+    let contentLoaded = false;
+    for (let i = 0; i < 5; i++) {
+      const pageContent = await page.evaluate(() => document.body.innerText);
+      if (pageContent.length > 100) {
+        contentLoaded = true;
+        break;
+      }
+      console.log(`[服务器爬取] 内容未完全加载，等待2秒...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    if (!contentLoaded) {
+      console.warn(`[服务器爬取] 警告：页面内容可能未完全加载`);
+    }
 
     // 尝试等待可能的动态内容加载
     try {
