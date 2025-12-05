@@ -1,0 +1,25 @@
+# 简单验证命令 - 在宝塔终端依次执行
+
+# 1. Node.js
+node -v
+npm -v
+
+# 2. PM2
+pm2 -v
+
+# 3. Nginx
+nginx -v
+
+# 4. PostgreSQL
+psql --version
+
+# 5. Redis
+redis-cli --version
+redis-cli ping
+
+# 6. 检查服务状态
+systemctl status nginx | head -n 1
+systemctl status postgresql | head -n 1
+systemctl status redis | head -n 1
+
+

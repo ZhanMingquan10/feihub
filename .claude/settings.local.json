@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(bash:*)",
+      "Bash(git push:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git config:*)",
+      "Bash(GIT_CURL_VERBOSE=1 GIT_TRACE=1 git push:*)",
+      "Bash(ssh-keygen:*)",
+      "Bash(cat:*)",
+      "Bash(curl:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote remove:*)",
+      "Bash(git remote add:*)",
+      "Bash(git cat-file:*)",
+      "Bash(ping:*)",
+      "Bash(timeout 30 git push origin main)",
+      "Bash(git update-ref:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
