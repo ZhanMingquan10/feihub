@@ -3,6 +3,8 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import documentsRouter from "./routes/documents";
 import submissionsRouter from "./routes/submissions";
+// 确保队列处理器被导入和执行
+require("./queue/processor"); // 导入队列处理器
 
 const app = express();
 const PORT = process.env.PORT || 3000;
