@@ -165,7 +165,7 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
           for (const selector of selectors) {
             const element = document.querySelector(selector);
             if (element) {
-              const text = element.innerText || element.textContent || '';
+              const text = (element as HTMLElement).innerText || element.textContent || '';
               const cleanText = text.trim();
               if (cleanText.length > 100) {
                 return cleanText;

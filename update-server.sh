@@ -33,7 +33,7 @@ echo ""
 
 # 4. 拉取最新代码
 echo "4. 从GitHub拉取最新代码..."
-git pull origin master
+git pull origin main
 if [ $? -ne 0 ]; then
     echo "❌ Git拉取失败，正在恢复备份..."
     cp -r $BACKUP_DIR/backend $PROJECT_DIR/

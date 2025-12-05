@@ -14,3 +14,6 @@ export interface FeishuDocumentData {
   aiAngle2?: string;      // AI总结角度2
   aiSummary2?: string;    // AI总结2的内容
 }
+
+// 导出服务端函数，供其他模块使用
+export { fetchFeishuDocumentServer as fetchFeishuDocument } from './feishu-server';

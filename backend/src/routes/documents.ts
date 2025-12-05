@@ -137,12 +137,12 @@ router.get("/hot-keywords", async (req, res) => {
     });
 
     console.log(`[热搜词] 找到 ${documents.length} 个有效文档`);
-    console.log(`[热搜词] 文档列表:`, documents.map(d => ({ id: d.id, title: d.title, tagsCount: d.tags?.length || 0, tags: d.tags })));
-    
+    console.log(`[热搜词] 文档列表:`, documents.map((d: any) => ({ id: d.id, title: d.title, tagsCount: d.tags?.length || 0, tags: d.tags })));
+
     // 详细日志：显示每个文档的标签状态
     let docsWithTags = 0;
     let docsWithoutTags = 0;
-    documents.forEach((doc, index) => {
+    documents.forEach((doc: any, index: number) => {
       if (doc.tags && Array.isArray(doc.tags) && doc.tags.length > 0) {
         docsWithTags++;
         console.log(`[热搜词] 文档 ${index + 1}: 有 ${doc.tags.length} 个标签 - ${doc.tags.join(", ")}`);
@@ -155,11 +155,11 @@ router.get("/hot-keywords", async (req, res) => {
 
     // 统计标签出现次数和总查看次数
     const tagStats: Record<string, { count: number; totalViews: number; avgViews: number }> = {};
-    
-    documents.forEach((doc, docIndex) => {
+
+    documents.forEach((doc: any, docIndex: number) => {
       if (doc.tags && Array.isArray(doc.tags) && doc.tags.length > 0) {
         console.log(`[热搜词] 处理文档 ${docIndex + 1} 的标签:`, JSON.stringify(doc.tags));
-        doc.tags.forEach((tag, tagIndex) => {
+        doc.tags.forEach((tag: any, tagIndex: number) => {
           console.log(`[热搜词]   标签 ${tagIndex + 1}: "${tag}" (类型: ${typeof tag}, 长度: ${tag ? tag.length : 0}, trim后长度: ${tag ? tag.trim().length : 0})`);
           if (tag && typeof tag === 'string' && tag.trim().length > 0) { // 确保标签不为空
             const trimmedTag = tag.trim();
