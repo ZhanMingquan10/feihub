@@ -163,6 +163,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-export { router as submissionRouter };
+export default router;
 
 

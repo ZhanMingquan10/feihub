@@ -280,6 +280,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-export { router as documentRouter };
+export default router;
 
 
