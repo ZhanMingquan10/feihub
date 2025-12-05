@@ -18,7 +18,11 @@
       "Bash(git cat-file:*)",
       "Bash(ping:*)",
       "Bash(timeout 30 git push origin main)",
-      "Bash(git update-ref:*)"
+      "Bash(git update-ref:*)",
+      "Bash(pm2 status:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(ssh:*)"
     ],
     "deny": [],
     "ask": []

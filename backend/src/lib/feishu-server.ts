@@ -84,7 +84,16 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
 
     // 等待内容加载（飞书文档可能需要一些时间渲染）
     console.log(`[服务器爬取] 等待内容渲染...`);
-    await new Promise(resolve => setTimeout(resolve, 5000)); // 等待 5 秒让 JavaScript 渲染完成
+    await new Promise(resolve => setTimeout(resolve, 8000)); // 增加到 8 秒确保完全渲染
+
+    // 尝试等待可能的动态内容加载
+    try {
+      await page.waitForSelector('[class*="title"], [class*="date"], [class*="time"], [data-testid*="title"]', {
+        timeout: 5000
+      }).catch(() => {}); // 忽略错误，继续执行
+    } catch (e) {
+      console.log(`[服务器爬取] 等待特定元素超时，继续处理...`);
+    }
 
     // 获取页面HTML内容
     let htmlContent = "";
