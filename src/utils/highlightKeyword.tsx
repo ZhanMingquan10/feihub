@@ -3,6 +3,7 @@
  * 在文本中高亮显示匹配的关键词
  */
 
+import React from "react";
 import clsx from "clsx";
 
 export interface HighlightResult {

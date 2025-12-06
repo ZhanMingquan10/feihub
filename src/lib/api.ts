@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000/api";
+// 生产环境使用相对路径，开发环境使用环境变量
+const API_BASE = import.meta.env.PROD ? "/api" : (import.meta.env.VITE_API_BASE || "http://localhost:4000/api");
 
 export interface ApiResponse<T> {
   success: boolean;

@@ -9,6 +9,7 @@ import { useDocumentStore } from "./store/useDocumentStore";
 import type { FeishuDocument, SortType } from "./types";
 import { ModalShell } from "./components/ModalShell";
 import { highlightKeyword, renderHighlightedText } from "./utils/highlightKeyword";
+import { formatDateForFeishu } from "./utils/formatDate";
 
 export default function App() {
   const { docs, search, sort, setSearch, setSort, loadDocuments, uploadDoc } = useDocumentStore();
@@ -381,7 +382,7 @@ export default function App() {
                 </h2>
               </div>
               <div className={clsx("mt-2 text-sm", isDarkMode ? "text-gray-400" : "text-gray-500")}>
-                {`更新于 ${dayjs(doc.date).format("YYYY 年 M 月 D 日")}`}
+                {`更新于 ${formatDateForFeishu(doc.date)}`}
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {doc.tags && doc.tags.length > 0 ? (
@@ -399,9 +400,9 @@ export default function App() {
                   </span>
                 )}
               </div>
-              <p className={clsx("mt-4 text-sm whitespace-pre-wrap overflow-hidden", isDarkMode ? "text-gray-300" : "text-gray-700")} style={{ display: '-webkit-box', WebkitLineClamp: 10, WebkitBoxOrient: 'vertical', lineHeight: '1.4' }}>
-                {search && doc.preview ? renderHighlightedText(highlightKeyword(doc.preview, search), isDarkMode) : (doc.preview || "暂无预览")}
-              </p>
+              <div className={clsx("mt-4 text-sm whitespace-pre-wrap overflow-hidden", isDarkMode ? "text-gray-300" : "text-gray-700")} style={{ display: '-webkit-box', WebkitLineClamp: 10, WebkitBoxOrient: 'vertical', lineHeight: '1.4' }}>
+                {search && doc.content ? renderHighlightedText(highlightKeyword(doc.content, search), isDarkMode) : (doc.content || "暂无内容")}
+              </div>
               {showAIRead && (
                 <div className={clsx("mt-4 rounded-2xl border-2 px-4 py-3 text-sm shadow-lg backdrop-blur-sm", isDarkMode ? "border-blue-500/60 bg-gradient-to-br from-blue-500/25 via-indigo-500/20 to-purple-500/25 text-gray-200 shadow-[0_0_30px_rgba(59,130,246,0.4)]" : "border-blue-500 bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 text-gray-800 shadow-[0_0_25px_rgba(59,130,246,0.3)]")}>
                   <div className={clsx("mb-2 text-xs font-bold uppercase tracking-widest flex items-center gap-2", isDarkMode ? "text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.6)]" : "text-blue-700 drop-shadow-[0_0_6px_rgba(37,99,235,0.4)] font-extrabold")}>

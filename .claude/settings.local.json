@@ -22,7 +22,17 @@
       "Bash(pm2 status:*)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(ssh:*)"
+      "Bash(ssh:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(python:*)",
+      "Bash(sshpass:*)",
+      "Bash(python3:*)",
+      "Bash(npx vite build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node:*)",
+      "Bash(find:*)",
+      "Bash(nginx:*)"
     ],
     "deny": [],
     "ask": []

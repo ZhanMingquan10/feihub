@@ -3,6 +3,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import documentsRouter from "./routes/documents";
 import submissionsRouter from "./routes/submissions";
+import submissionsSyncRouter from "./routes/submissions-sync";
 // 确保队列处理器被导入和执行
 require("./queue/processor"); // 导入队列处理器
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // 路由
 app.use("/api/documents", documentsRouter);
 app.use("/api/submissions", submissionsRouter);
+app.use("/api/submissions-sync", submissionsSyncRouter);
 
 // 健康检查
 app.get("/health", (req, res) => {

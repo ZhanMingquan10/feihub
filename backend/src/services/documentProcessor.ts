@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { fetchFeishuDocument } from "../lib/feishu";
+import { fetchFeishuDocumentServer } from "../lib/feishu-server";
 
 export interface ProcessDocumentResult {
   success: boolean;
@@ -75,7 +75,7 @@ export async function processDocumentSubmission(
 
     // 3. 获取飞书文档内容（AI已一次性提取所有信息）
     console.log(`[处理文档] 开始获取飞书文档内容...`);
-    const docData = await fetchFeishuDocument(link);
+    const docData = await fetchFeishuDocumentServer(link);
     console.log(`[处理文档] 文档内容获取结果:`);
     console.log(`[处理文档] - 标题: "${docData.title}"`);
     console.log(`[处理文档] - 内容长度: ${docData.content.length}`);

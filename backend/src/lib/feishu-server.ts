@@ -3,6 +3,51 @@ import { FeishuDocumentData } from "./feishu";
 import { generateAIContentFromHTML } from "./ai";
 
 /**
+ * 解析相对日期格式为 YYYY-MM-DD
+ * 支持 "Modified Yesterday", "Modified Today", "Modified XX月XX日" 等格式
+ */
+function parseRelativeDate(dateText: string): string {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentDate = now.getDate();
+
+  // 处理 "Modified Yesterday"
+  if (dateText.includes('Yesterday') || dateText.includes('昨天')) {
+    const yesterday = new Date(now);
+    yesterday.setDate(currentDate - 1);
+    return yesterday.toISOString().split('T')[0];
+  }
+
+  // 处理 "Modified Today"
+  if (dateText.includes('Today') || dateText.includes('今天')) {
+    return now.toISOString().split('T')[0];
+  }
+
+  // 处理 "XX月XX日" 格式（当前年份）
+  const monthDayMatch = dateText.match(/(\d{1,2})月(\d{1,2})日/);
+  if (monthDayMatch) {
+    const month = parseInt(monthDayMatch[1]) - 1; // JavaScript months are 0-based
+    const day = parseInt(monthDayMatch[2]);
+    const date = new Date(currentYear, month, day);
+    return date.toISOString().split('T')[0];
+  }
+
+  // 处理 "XXXX年XX月XX日" 格式
+  const fullDateMatch = dateText.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (fullDateMatch) {
+    const year = parseInt(fullDateMatch[1]);
+    const month = parseInt(fullDateMatch[2]) - 1;
+    const day = parseInt(fullDateMatch[3]);
+    const date = new Date(year, month, day);
+    return date.toISOString().split('T')[0];
+  }
+
+  // 如果无法解析，返回今天日期
+  return now.toISOString().split('T')[0];
+}
+
+/**
  * 服务器端飞书文档爬取（使用 Puppeteer + Chromium）
  * 适用于云服务器部署
  */
@@ -13,7 +58,8 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
     
     // 启动浏览器（服务器环境配置）
     browser = await puppeteer.launch({
-      headless: true, // 无头模式，适合服务器
+      headless: true, // 使用headless模式
+      executablePath: '/www/wwwroot/feihub/backend/chromium-launcher.sh', // 使用启动脚本
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -22,7 +68,7 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
         '--disable-gpu',
         '--disable-web-security',
         '--disable-features=IsolateOrigins,site-per-process',
-        '--single-process', // 单进程模式，减少资源占用
+        // '--single-process', // 移除单进程模式，可能导致问题
         '--disable-background-networking',
         '--disable-background-timer-throttling',
         '--disable-backgrounding-occluded-windows',
@@ -81,8 +127,8 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
     // 访问页面
     console.log(`[服务器爬取] 正在加载页面... (类型: ${isWikiLink ? 'Wiki文档' : '普通文档'})`);
     await page.goto(link, {
-      waitUntil: 'networkidle2', // 等待网络空闲
-      timeout: 30000
+      waitUntil: 'domcontentloaded', // 等待DOM加载完成
+      timeout: 60000
     });
 
     // 等待内容加载（飞书文档可能需要一些时间渲染）
@@ -139,8 +185,16 @@ export async function fetchFeishuDocumentServer(link: string): Promise<FeishuDoc
     let aiSummary2 = "";
 
     try {
-      // 使用AI提取所有信息
-      const aiResult = await generateAIContentFromHTML(htmlContent, "");
+      // 提取文本内容作为AI分析的辅助
+      const textContent = await page.evaluate(() => document.body.innerText || '');
+
+      console.log(`[服务器爬取] 准备调用AI分析...`);
+      console.log(`[服务器爬取] HTML内容长度: ${htmlContent.length}`);
+      console.log(`[服务器爬取] 文本内容长度: ${textContent.length}`);
+      console.log(`[服务器爬取] 环境变量DEEPSEEK_API_KEY存在: ${!!process.env.DeepSeek_API_KEY || !!process.env.DEEPSEEK_API_KEY}`);
+
+      // 使用AI提取所有信息（传递HTML内容和文本内容）
+      const aiResult = await generateAIContentFromHTML(htmlContent, textContent);
 
       if (aiResult.identifiedTitle) title = aiResult.identifiedTitle;
       if (aiResult.identifiedDate) date = aiResult.identifiedDate;

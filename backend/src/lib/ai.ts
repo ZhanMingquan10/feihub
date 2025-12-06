@@ -2,6 +2,51 @@ import OpenAI from "openai";
 import * as fs from "fs";
 import * as path from "path";
 
+/**
+ * 解析相对日期格式为 YYYY-MM-DD
+ * 支持 "Modified Yesterday", "Modified Today", "Modified XX月XX日" 等格式
+ */
+function parseRelativeDate(dateText: string): string {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentDate = now.getDate();
+
+  // 处理 "Modified Yesterday"
+  if (dateText.includes('Yesterday') || dateText.includes('昨天')) {
+    const yesterday = new Date(now);
+    yesterday.setDate(currentDate - 1);
+    return yesterday.toISOString().split('T')[0];
+  }
+
+  // 处理 "Modified Today"
+  if (dateText.includes('Today') || dateText.includes('今天')) {
+    return now.toISOString().split('T')[0];
+  }
+
+  // 处理 "XX月XX日" 格式（当前年份）
+  const monthDayMatch = dateText.match(/(\d{1,2})月(\d{1,2})日/);
+  if (monthDayMatch) {
+    const month = parseInt(monthDayMatch[1]) - 1; // JavaScript months are 0-based
+    const day = parseInt(monthDayMatch[2]);
+    const date = new Date(currentYear, month, day);
+    return date.toISOString().split('T')[0];
+  }
+
+  // 处理 "XXXX年XX月XX日" 格式
+  const fullDateMatch = dateText.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (fullDateMatch) {
+    const year = parseInt(fullDateMatch[1]);
+    const month = parseInt(fullDateMatch[2]) - 1;
+    const day = parseInt(fullDateMatch[3]);
+    const date = new Date(year, month, day);
+    return date.toISOString().split('T')[0];
+  }
+
+  // 如果无法解析，返回今天日期
+  return now.toISOString().split('T')[0];
+}
+
 export interface AIGeneratedContent {
   tags: string[];
   summary: string; // 2句话总结（兼容旧格式）
@@ -193,10 +238,14 @@ ${textContent.substring(0, 8000)} // 限制长度避免token过多
 
       // 验证和格式化日期
       let identifiedDate = parsed.identifiedDate;
-      if (identifiedDate && !/^\d{4}-\d{2}-\d{2}$/.test(identifiedDate)) {
-        // 如果日期格式不正确，尝试修复
-        console.warn(`[AI] 识别的日期格式不正确: ${identifiedDate}`);
-        identifiedDate = undefined;
+      if (identifiedDate) {
+        // 如果日期格式不正确，尝试解析相对日期
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(identifiedDate)) {
+          console.warn(`[AI] 识别的日期格式不正确: ${identifiedDate}`);
+          // 尝试解析相对日期格式
+          identifiedDate = parseRelativeDate(identifiedDate);
+          console.log(`[AI] 解析相对日期为: ${identifiedDate}`);
+        }
       }
 
       // 如果有HTML内容，记录AI识别的信息
