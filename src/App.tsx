@@ -1,12 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Upload, Search, Eye, Moon, Sun, FileText, Activity, MessageCircle, Share2, ArrowUp } from "lucide-react";
+import { motion } from "framer-motion";
+import { Search, Eye, Moon, Sun, MessageCircle, Share2, ArrowUp } from "lucide-react";
 import dayjs from "dayjs";
 import clsx from "clsx";
 // 移除静态热搜词导入，改为动态获取
 import { useAntiScrapeShield } from "./hooks/useAntiScrapeShield";
 import { useDocumentStore } from "./store/useDocumentStore";
-import type { FeishuDocument, SortType } from "./types";
+import type { SortType } from "./types";
 import { ModalShell } from "./components/ModalShell";
 import { highlightKeyword, renderHighlightedText } from "./utils/highlightKeyword";
 import { formatDateForFeishu } from "./utils/formatDate";
@@ -45,7 +45,7 @@ export default function App() {
   const [hotKeywords, setHotKeywords] = useState<string[]>([]); // 动态热搜词，初始为空
   const [copied, setCopied] = useState(false); // 是否已复制微信号
   const [isScrolled, setIsScrolled] = useState(false); // 滚动状态，用于分享按钮折叠
-  useAntiScrapeShield();
+  useAntiScrapeShield({});
 
   // 加载全站统计信息
   const loadStats = async () => {
@@ -351,7 +351,7 @@ export default function App() {
               href={doc.link}
               target="_blank"
               rel="noreferrer"
-              onClick={async (e) => {
+              onClick={async () => {
                 // 增加查看次数
                 try {
                   const { incrementDocumentViews } = await import("./lib/api");
@@ -541,7 +541,7 @@ export default function App() {
           </div>
           <div className="flex justify-center">
             <motion.button
-              onClick={async (e) => {
+              onClick={async () => {
                 if (copied) return; // 如果已复制，不再执行
                 
                 try {

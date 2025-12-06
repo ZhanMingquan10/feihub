@@ -1,9 +1,15 @@
 import { useEffect } from "react";
+
 const suspiciousKeys = ["PrintScreen", "F12"];
-export function useAntiScrapeShield(options) {
+
+interface Options {
+  onFlagged?: (reason: string) => void;
+}
+
+export function useAntiScrapeShield(options: Options = {}) {
     useEffect(() => {
         let copyCount = 0;
-        const handler = (event) => {
+        const handler = (event: Event) => {
             if (event.type === "copy") {
                 copyCount += 1;
                 if (copyCount > 5) {
@@ -14,7 +20,7 @@ export function useAntiScrapeShield(options) {
                 event.preventDefault();
             }
             if (event.type === "keydown") {
-                const keyEvent = event;
+                const keyEvent = event as KeyboardEvent;
                 if (keyEvent.ctrlKey && keyEvent.key.toLowerCase() === "s") {
                     event.preventDefault();
                 }
