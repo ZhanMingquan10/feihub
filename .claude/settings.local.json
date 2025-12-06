@@ -32,7 +32,8 @@
       "Bash(npx tsc:*)",
       "Bash(node:*)",
       "Bash(find:*)",
-      "Bash(nginx:*)"
+      "Bash(nginx:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
